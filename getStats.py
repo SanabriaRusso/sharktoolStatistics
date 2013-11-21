@@ -1,8 +1,5 @@
 #!/usr/lib/python
 
-#####FOR TOMORROW
-#####The wlan.fc.retry field does not appear to work with the captured file. Try anohter capture.
-
 import pyshark
 from collections import defaultdict
 import sys
@@ -20,6 +17,7 @@ def main(arvg):
 	meanInterArrivalTime = defaultdict(list)
 
 	###Filling the statistics dictionary of lists
+    ###First index in capute list, should be an int. That's why "counter" exists. Fix needed.
 	for lines in capture:
 		statistics[capture[counter]['ip.addr'][0]].append(capture[counter]['frame.time'])		
 		counter = counter + 1
