@@ -11,17 +11,18 @@ def main(argv):
 	DoA = 0 #Difference of Arrival
 	
 	#Input file-related columns	
-	epochColumn = 6
-	sourceAddress = 1
-	retryColumn = 7
+	epochColumn = 1
+	sourceAddress = 2
+	retryColumn = 3
 
 	#Managing multi source stats
-	registered = 0	
+	registered = 0	#Just for having an output file where nodes are numbered for GNUPlot
+	substraction = 0
 	hostsNumbered = {}
 	retransmissions = {}
 	sxTransmissions = {}
+	interArrivalTimesPerHost = {}
 	source = ''
-	transmitter = ''
 
 #------Managing the input file------#
 
@@ -56,18 +57,28 @@ def main(argv):
 							registered += 1
 							hostsNumbered[source] = registered
 					
-					#Capturing successful transmission and retransmissions
-					if capture[rows][retryColumn] != "Frame is not being retransmitted":
-						if source not in retransmissions:
-							retransmissions[source] =  1
-						else:
-							retransmissions[source] +=  1
+					
+					###################################################
+					#Capturing the time between transmissions per host#
+					###################################################
+					if source in interArrivalTimesPerHost:
+						interArrivalTimesPerHost[source].append(float(capture[rows][epochColumn]) - interArrivalTimesPerHost[source][-1])
 					else:
-						if source not in sxTransmissions:
-							sxTransmissions[source] = 1
-						else:
-							sxTransmissions[source] += 1
+						interArrivalTimesPerHost[source] = [float(capture[rows][epochColumn])]
 						
+					#######################################################
+					#Capturing successful transmission and retransmissions#
+					#######################################################
+					if capture[rows][retryColumn] != "Frame is not being retransmitted":
+						countRetransmissions(source, retransmissions)
+					else:
+						countSxTransmissions(source, sxTransmissions)
+					
+					
+					############################
+					###Writing to output file###
+					############################
+					
 					#Writing 1. row 2. host 3. arrivalTime 4. time between arrivals
 					statistics.write(str(rows) + ' ' + source + ' ' + str(hostsNumbered[source]) + ' ' + capture[rows][epochColumn] + ' ' + str(DoA) + '\n')
 				
@@ -78,15 +89,74 @@ def main(argv):
 
 		statistics.close()
 	file.close()
+		
+	#Removing the fist item on the interArrivalTimesPerHost list
+	#The fist item coupled to each key in this dictionary is the arrival time
+	for hosts in interArrivalTimesPerHost:
+		interArrivalTimesPerHost[hosts] = interArrivalTimesPerHost[hosts][1:]
+
+
+	###############
+	#Screen output#
+	###############
+	
 	print "\n"
 	print "###Retransmissions###"
 	for key in retransmissions:
 		print "---Node ", key, " retransmissions: ", retransmissions[key]
+		print "	  ---Average time between transmissions: ", average(interArrivalTimesPerHost[key]), "s."
+		print "	     ---Standard deviation: ", std(interArrivalTimesPerHost[key]), "s."
 	print "\n"	
-	print "###Successful Transmissions###"
-			
+	
+	print "###Successful Transmissions###"			
 	for key in sxTransmissions:
 		print "+++Node ", key, " succcessful transmissions: ", sxTransmissions[key]
+		print "	  ---Average time between transmissions: ", average(interArrivalTimesPerHost[key]), "s."
+		print "      ---Standard deviation: ", std(interArrivalTimesPerHost[key]), "s."
+
+
+
+
+
+#################
+####Functions####
+#################
+
+
+def average(listOfValues):	
+	if len(listOfValues) > 0:
+		numerator = 0
+		counter = 0
+		for item in listOfValues:
+			numerator = numerator + item
+			counter = counter + 1
+		return numerator/counter
+	else:
+		return 0
+
+def std(listOfValues):
+	if len(listOfValues) > 1:
+		numerator = 0
+		counter = 0
+		mean = average(listOfValues)
+		for item in listOfValues:
+			numerator = numerator + (math.fabs(item - mean)**(2))
+			counter = counter + 1
+		return (numerator/(counter - 1))**(0.5)
+	else:
+		return 0
+
+def countRetransmissions(source, dictionary):
+	if source not in dictionary:
+		dictionary[source] =  1
+	else:
+		dictionary[source] +=  1
+		
+def countSxTransmissions(source, dictionary):
+	if source not in dictionary:
+		dictionary[source] = 1
+	else:
+		dictionary[source] += 1
 
 if __name__ == "__main__":
 	main(sys.argv[1:])
