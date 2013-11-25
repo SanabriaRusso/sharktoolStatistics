@@ -19,8 +19,10 @@ columns - descriptions:
 
 It also will print on the display the number of retransmitted frames.
 
+As for screen output, this little script will show you the number of transmissions or retransmissions of each host based on its MAC address. It is important that you output the .cvs file with the columns of interest sorted as assumed by the script.
+
 
 Pending Work
 ============
 
-As with the pyshark example, I'm still to write the time between transmitted packets of the same host. 
+TBD.
