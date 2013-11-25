@@ -62,7 +62,7 @@ def main(argv):
 					#Capturing the time between transmissions per host#
 					###################################################
 					if source in interArrivalTimesPerHost:
-						interArrivalTimesPerHost[source].append(float(capture[rows][epochColumn]) - interArrivalTimesPerHost[source][-1])
+						interArrivalTimesPerHost[source].append(float(capture[rows][epochColumn]) - float(capture[rows-1][epochColumn]))
 					else:
 						interArrivalTimesPerHost[source] = [float(capture[rows][epochColumn])]
 						
@@ -82,8 +82,8 @@ def main(argv):
 					#Writing 1. row 2. host 3. arrivalTime 4. time between arrivals
 					statistics.write(str(rows) + ' ' + source + ' ' + str(hostsNumbered[source]) + ' ' + capture[rows][epochColumn] + ' ' + str(DoA) + '\n')
 				
-				else:	#Unrecognised source address
-					continue
+				#else:	#Unrecognised source address
+				#	continue
 				
 				rows += 1
 
