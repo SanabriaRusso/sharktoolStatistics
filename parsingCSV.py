@@ -66,7 +66,7 @@ def main(argv):
 						#Build a dictionary for the arrivals according to each key
 						interArrivalTimesPerHost[source].append(float(capture[rows][epochColumn]) - lastArrivalPerHost[source])
 					else:
-						interArrivalTimesPerHost[source] = [float(capture[rows][epochColumn])]
+						interArrivalTimesPerHost[source] = []
 					
 					lastArrivalPerHost[source] = float(capture[rows][epochColumn])
 						
@@ -87,18 +87,10 @@ def main(argv):
 					#Writing 1. row 2. host 3. arrivalTime 4. time between arrivals
 					statistics.write(str(rows) + ' ' + source + ' ' + str(hostsNumbered[source]) + ' ' + capture[rows][epochColumn] + ' ' + str(DoA) + '\n')
 				
-				#else:	#Unrecognised source address
-				#	continue
-				
 				rows += 1
 
 		statistics.close()
 	file.close()
-		
-	#Removing the fist item on the interArrivalTimesPerHost list
-	#The fist item coupled to each key in this dictionary is the arrival time
-	for hosts in interArrivalTimesPerHost:
-		interArrivalTimesPerHost[hosts] = interArrivalTimesPerHost[hosts][1:]
 
 
 	###############
