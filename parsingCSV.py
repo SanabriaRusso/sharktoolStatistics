@@ -104,15 +104,13 @@ def main(argv):
 	print "###Retransmissions###"
 	for key in retransmissions:
 		print "---Node ", key, " retransmissions: ", retransmissions[key]
-		print "	  ---Average time between transmissions: ", average(interArrivalTimesPerHost[key]), "s."
-		print "	     ---Standard deviation: ", std(interArrivalTimesPerHost[key]), "s."
 	print "\n"	
 	
 	print "###Successful Transmissions###"			
 	for key in sxTransmissions:
-		print "+++Node ", key, " succcessful transmissions: ", sxTransmissions[key]
+		print "+++Node:", key, " succcessful transmissions: ", sxTransmissions[key]
 		print "	  ---Average time between transmissions: ", average(interArrivalTimesPerHost[key]), "s."
-		print "      ---Standard deviation: ", std(interArrivalTimesPerHost[key]), "s."
+		print "		---Standard deviation: ", std(interArrivalTimesPerHost[key]), "s."
 
 
 
