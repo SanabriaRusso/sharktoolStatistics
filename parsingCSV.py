@@ -51,6 +51,7 @@ def main(argv):
 		capture = list(csv.reader(file)) #stores the content of the csv as a list
 		with open(outputfile, 'w') as statistics:
 			for lines in capture:
+				#Deprecated, future updates will remove this#
 				if capture[rows][sourceAddress] != "":
 					source = capture[rows][sourceAddress]
 					if rows == 0:	
@@ -84,9 +85,9 @@ def main(argv):
 						countSxTransmissions(source, sxTransmissions)
 					
 					
-					############################
-					###Writing to output file###
-					############################
+					#########################################
+					###Writing to output file (deprecated)###
+					#########################################
 					
 					#Writing 1. row 2. host 3. arrivalTime 4. time between arrivals
 					statistics.write(str(rows) + ' ' + source + ' ' + str(hostsNumbered[source]) + ' ' + capture[rows][epochColumn] + ' ' + str(DoA) + '\n')
