@@ -1,4 +1,8 @@
 #!/usr/lib/python
+
+##PENDING:
+###########Plot an histogram to see the common interarrival values
+
 import csv
 from decimal import Decimal
 import sys, getopt #to manage arguments passed from CLI
@@ -92,6 +96,10 @@ def main(argv):
 		statistics.close()
 	file.close()
 
+	##########################################
+	#Printing to a plotable friendly format#
+	##########################################	
+	outputToFile(interArrivalTimesPerHost)
 
 	###############
 	#Screen output#
@@ -111,12 +119,22 @@ def main(argv):
 
 
 
-
-
 #################
 ####Functions####
 #################
 
+def outputToFile(dict):
+	listOfValues = []
+	for key in dict:
+		lines = 0
+		nameOfFile = "Node-" + key
+		listOfValues = dict[key]
+		with open(nameOfFile, 'w') as output:
+			for value in listOfValues:
+				output.write(str(lines) + ' ' + str(value) + '\n')
+				lines += 1
+		output.close()
+		
 
 def average(listOfValues):	
 	if len(listOfValues) > 0:
