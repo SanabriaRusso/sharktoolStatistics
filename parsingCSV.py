@@ -22,6 +22,7 @@ def main(argv):
 	retransmissions = {}
 	sxTransmissions = {}
 	interArrivalTimesPerHost = {}
+	lastArrivalPerHost = {}
 	source = ''
 
 #------Managing the input file------#
@@ -62,9 +63,13 @@ def main(argv):
 					#Capturing the time between transmissions per host#
 					###################################################
 					if source in interArrivalTimesPerHost:
-						interArrivalTimesPerHost[source].append(float(capture[rows][epochColumn]) - float(capture[rows-1][epochColumn]))
+						#Build a dictionary for the arrivals according to each key
+						interArrivalTimesPerHost[source].append(float(capture[rows][epochColumn]) - lastArrivalPerHost[source])
 					else:
 						interArrivalTimesPerHost[source] = [float(capture[rows][epochColumn])]
+					
+					lastArrivalPerHost[source] = float(capture[rows][epochColumn])
+						
 						
 					#######################################################
 					#Capturing successful transmission and retransmissions#
