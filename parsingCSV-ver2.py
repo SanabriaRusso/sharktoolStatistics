@@ -62,16 +62,7 @@ def main(argv):
 					if source not in hostsNumbered:
 						registered += 1
 						hostsNumbered[source] = registered
-					
-					
-				"""#######################################################
-				#Capturing successful transmission and retransmissions#
-				#######################################################
-				if capture[rows][retryColumn] != "Frame is not being retransmitted":
-					countRetransmissions(source, retransmissions)
-				else:
-					countSxTransmissions(source, sxTransmissions)"""
-					
+			
 				###################################################
 				###########Capturing statistics per host###########
 				#hostStatistics: {source:[0. DoA, 1. avgDoA, 2. stdDoA, 3. FirstTx, 4. LastTX, 5. ReTx, 6. SxTx]}
@@ -176,18 +167,6 @@ def std(listOfValues):
 		return (numerator/(counter - 1))**(0.5)
 	else:
 		return 0
-
-"""def countRetransmissions(source, dictionary):
-	if source not in dictionary:
-		dictionary[source] =  1
-	else:
-		dictionary[source] +=  1
-		
-def countSxTransmissions(source, dictionary):
-	if source not in dictionary:
-		dictionary[source] = 1
-	else:
-		dictionary[source] += 1"""
 
 if __name__ == "__main__":
 	main(sys.argv[1:])
