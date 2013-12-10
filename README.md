@@ -13,16 +13,14 @@ Parsing .csv files
 
 I've also added an example file, called "parsingCSV.py", which will import a .csv file exported from Wireshark and compute different things. At the moment, it should admit the exaple test.csv file and output a file with the following structure:
 
-columns - descriptions:
-
-1-row, 2-host, 3-arrivalTime, 4-time between two consecutive arrivals of any source (as if seen from the channel's perspective)
-
-It also will print on the display the number of retransmitted frames.
-
-As for screen output, this little script will show you the number of transmissions or retransmissions of each host based on its MAC address. It is important that you output the .cvs file with the columns of interest sorted as assumed by the script.
-
+0. HostNumber 1. HostIP 2. avgDifferenceOfArrival 3. stdDoA 4. FirstTX 5. LastTX 6. Retransmissions 7. SuccessfullTX
 
 Pending Work
 ============
 
-TBD.
+The previous version had a script to output the time between packets of the same host. This feature is removed in this version, giving way to more processed statistics in the outout file.
+
+
+
+
+

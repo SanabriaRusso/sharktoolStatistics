@@ -1,7 +1,7 @@
 #!/usr/lib/python
 
 ##PENDING:
-###########Plot an histogram to see the common interarrival values
+###########gather the transmission period of each node
 
 import csv
 from decimal import Decimal
@@ -51,14 +51,14 @@ def main(argv):
 		capture = list(csv.reader(file)) #stores the content of the csv as a list
 		with open(outputfile, 'w') as statistics:
 			for lines in capture:
-				#Deprecated, future updates will remove this#
+				#Numbering the nodes, not involved in computation#
 				if capture[rows][sourceAddress] != "":
 					source = capture[rows][sourceAddress]
 					if rows == 0:	
-						DoA = 0
+						#DoA = 0
 						hostsNumbered[source] = registered
 					else:
-						DoA = Decimal(capture[rows][epochColumn]) - Decimal(capture[rows-1][epochColumn])
+						#DoA = Decimal(capture[rows][epochColumn]) - Decimal(capture[rows-1][epochColumn])
 						if source not in hostsNumbered:
 							registered += 1
 							hostsNumbered[source] = registered
