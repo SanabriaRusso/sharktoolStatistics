@@ -55,28 +55,28 @@ def main(argv):
 			if capture[rows][sourceAddress] != "":
 				source = capture[rows][sourceAddress]
 				if rows == 0:	
-					#DoA = 0
 					hostsNumbered[source] = registered
 				else:
-					#DoA = Decimal(capture[rows][epochColumn]) - Decimal(capture[rows-1][epochColumn])
 					if source not in hostsNumbered:
 						registered += 1
 						hostsNumbered[source] = registered
 			
 				###################################################
 				###########Capturing statistics per host###########
-				#hostStatistics: {source:[0. DoA, 1. avgDoA, 2. stdDoA, 3. FirstTx, 4. LastTX, 5. ReTx, 6. SxTx]}
+				#hostStatistics: {source:[0. DoA, 1. avgDoA, 2. stdDoA, 3. FirstTx, 4. LastTX, 5. ReTx, 6. SxTx, 7. ArrivalTimesPerHost]}
 				###################################################
 				if source in hostStatistics:
 					hostStatistics[source][0].append(float(capture[rows][epochColumn]) - lastArrivalPerHost[source])
+					hostStatistics[source][7].append(float(capture[rows][epochColumn]))
 					if capture[rows][retryColumn] != "Frame is not being retransmitted":
 						hostStatistics[source][5] += 1
 					else:
 						hostStatistics[source][6] += 1
 				else:
 					#Build a dictionary for the statistics
-					hostStatistics[source] = [[],0,0,0,0,0,0]
+					hostStatistics[source] = [[],0,0,0,0,0,0,[]]
 					firstArrivalPerHost[source] = float(capture[rows][epochColumn])
+					hostStatistics[source][7].append(firstArrivalPerHost[source])
 					
 				lastArrivalPerHost[source] = float(capture[rows][epochColumn])						
 				
@@ -100,7 +100,12 @@ def main(argv):
 	##########################################
 	#Printing to a plotable friendly format#
 	##########################################	
+	###Exporting to a file the whole statistics###
 	outputToFile(hostStatistics, hostsNumbered, outputfile)
+	###Exporting to file node-related statistics###
+	###7 is the column for the arrival times per host###
+	outputFilePerNode(hostStatistics, 7)
+
 
 	###############
 	#Screen output#
@@ -117,32 +122,38 @@ def main(argv):
 		print "+++Node:", key, " succcessful transmissions: ", hostStatistics[key][6]
 		print "	  ---Average time between transmissions: ", hostStatistics[key][1], "s."
 		print "		---Standard deviation: ", hostStatistics[key][2], "s."
+		print "+++Throughput:", (throughput(hostStatistics[key][6],hostStatistics[key][3],hostStatistics[key][4]))/1000000, "Mbps."
 
 
 
 #################
 ####Functions####
 #################
+def throughput(sxTx, firstTx, lastTx):
+	throughput = (sxTx*1470*8)/float(lastTx - firstTx)
+	return throughput
+
 def outputToFile(dict, hostNumbers, file):
 	with open(file, 'w') as output:
-		output.write("0. HostNumber, 1. IP, 2. avgDoA, 3. stdDoA, 4. FirstTx, 5. LastTX, 6. ReTx, 7. SxTx" + '\n')
+		output.write("0. HostNumber, 1. IP, 2. avgDoA, 3. stdDoA, 4. FirstTx, 5. LastTX, 6. ReTx, 7. SxTx, 8. throughput (bps)" + '\n')
 		for key in dict:
 			if key in hostNumbers:
-				output.write(str(hostNumbers[key]) + ' ' + str(key) + ' ' + str(dict[key][1]) + ' ' + str(dict[key][2]) + ' ' + str(dict[key][3]) + ' ' + str(dict[key][4]) + ' ' + str(dict[key][5]) + ' ' + str(dict[key][6]) + '\n')
+				output.write(str(hostNumbers[key]) + ' ' + str(key) + ' ' + str(dict[key][1]) + ' ' + str(dict[key][2]) + ' ' + str(dict[key][3]) + ' ' + str(dict[key][4]) + ' ' + str(dict[key][5]) + ' ' + str(dict[key][6]) + ' ' + str(throughput(dict[key][6],dict[key][3],dict[key][4])) +'\n')
 	output.close()
 
 
-"""def outputFilePerNode(dict):
+def outputFilePerNode(dict, column):
 	listOfValues = []
 	for key in dict:
 		lines = 0
 		nameOfFile = "Node-" + key
-		listOfValues = dict[key]
+		listOfValues = dict[key][column]
 		with open(nameOfFile, 'w') as output:
+			output.write("#1. frameCount, 2. TimeOfArrival" + '\n')
 			for value in listOfValues:
 				output.write(str(lines) + ' ' + str(value) + '\n')
 				lines += 1
-		output.close()"""
+		output.close()
 		
 
 def average(listOfValues):	
