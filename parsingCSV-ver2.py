@@ -122,15 +122,15 @@ def main(argv):
 		print "+++Node:", key, " succcessful transmissions: ", hostStatistics[key][6]
 		print "	  ---Average time between transmissions: ", hostStatistics[key][1], "s."
 		print "		---Standard deviation: ", hostStatistics[key][2], "s."
-		print "+++Throughput:", (throughput(hostStatistics[key][6],hostStatistics[key][3],hostStatistics[key][4]))/1000000, "Mbps."
+		print "   +++Throughput:", (throughput(hostStatistics[key][6],hostStatistics[key][5],hostStatistics[key][3],hostStatistics[key][4]))/1000000, "Mbps."
 
 
 
 #################
 ####Functions####
 #################
-def throughput(sxTx, firstTx, lastTx):
-	throughput = (sxTx*1470*8)/float(lastTx - firstTx)
+def throughput(sxTx, retTx, firstTx, lastTx):
+	throughput = ((sxTx+retTx)*1470*8)/float(lastTx - firstTx)
 	return throughput
 
 def outputToFile(dict, hostNumbers, file):
@@ -138,7 +138,7 @@ def outputToFile(dict, hostNumbers, file):
 		output.write("0. HostNumber, 1. IP, 2. avgDoA, 3. stdDoA, 4. FirstTx, 5. LastTX, 6. ReTx, 7. SxTx, 8. throughput (bps)" + '\n')
 		for key in dict:
 			if key in hostNumbers:
-				output.write(str(hostNumbers[key]) + ' ' + str(key) + ' ' + str(dict[key][1]) + ' ' + str(dict[key][2]) + ' ' + str(dict[key][3]) + ' ' + str(dict[key][4]) + ' ' + str(dict[key][5]) + ' ' + str(dict[key][6]) + ' ' + str(throughput(dict[key][6],dict[key][3],dict[key][4])) +'\n')
+				output.write(str(hostNumbers[key]) + ' ' + str(key) + ' ' + str(dict[key][1]) + ' ' + str(dict[key][2]) + ' ' + str(dict[key][3]) + ' ' + str(dict[key][4]) + ' ' + str(dict[key][5]) + ' ' + str(dict[key][6]) + ' ' + str(throughput(dict[key][6],dict[key][5],dict[key][3],dict[key][4])) +'\n')
 	output.close()
 
 
