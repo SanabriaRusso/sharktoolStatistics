@@ -21,6 +21,7 @@ def main(argv):
 
 	#Managing multi source stats
 	registered = 0	#Just for having an output file where nodes are numbered for GNUPlot
+					# Can also be used to know the number of stations
 	substraction = 0
 	hostsNumbered = {}
 	retransmissions = {}
@@ -29,6 +30,10 @@ def main(argv):
 	firstArrivalPerHost = {}
 	lastArrivalPerHost = {}
 	source = ''
+	
+	#Overall Statistics
+	averageThroughput = 0.0
+	averageRetransmissions = 0.0
 
 #------Managing the input file------#
 
@@ -51,7 +56,7 @@ def main(argv):
 	with open(inputfile, 'r') as file: #opens the file
 		capture = list(csv.reader(file)) #stores the content of the csv as a list
 		for lines in capture:
-			#Numbering the nodes, not involved in computation#
+			#Numbering the nodes. Not involved in computation#
 			if capture[rows][sourceAddress] != "":
 				source = capture[rows][sourceAddress]
 				if rows == 0:	
@@ -103,8 +108,7 @@ def main(argv):
 	###Exporting to a file the whole statistics###
 	outputToFile(hostStatistics, hostsNumbered, outputfile)
 	###Exporting to file node-related statistics###
-	###7 is the column for the arrival times per host###
-	outputFilePerNode(hostStatistics, 7)
+	outputFilePerNode(hostStatistics, 7, 0)
 
 
 	###############
@@ -114,15 +118,24 @@ def main(argv):
 	print "\n"
 	print "###Retransmissions###"
 	for key in hostStatistics:
-		print "---Node ", key, " retransmissions: ", hostStatistics[key][5]
+		print "---Node ", key, "retransmissions: ", ((hostStatistics[key][5]/float(hostStatistics[key][5]+hostStatistics[key][6])))*100, "%"
+		averageRetransmissions += ((hostStatistics[key][5]/float(hostStatistics[key][5]+hostStatistics[key][6])))*100
 	print "\n"	
 	
 	print "###Successful Transmissions###"			
 	for key in hostStatistics:
-		print "+++Node:", key, " succcessful transmissions: ", hostStatistics[key][6]
+		print "+++Node:", key, " succcessful transmissions: ", hostStatistics[key][6]+hostStatistics[key][5]
 		print "	  ---Average time between transmissions: ", hostStatistics[key][1], "s."
 		print "		---Standard deviation: ", hostStatistics[key][2], "s."
-		print "   +++Throughput:", (throughput(hostStatistics[key][6],hostStatistics[key][5],hostStatistics[key][3],hostStatistics[key][4]))/1000000, "Mbps."
+		print "   +++Throughput:", (throughput(hostStatistics[key][6],hostStatistics[key][5],hostStatistics[key][3],hostStatistics[key][4]))/1000000, "Mbps.\n"
+		averageThroughput += (throughput(hostStatistics[key][6],hostStatistics[key][5],hostStatistics[key][3],hostStatistics[key][4]))/1000000
+		
+		
+	print "\n"
+	print "###Overall Statistics###"
+	print "---Average throughput per station: ", averageThroughput/float(registered+1), "Mbps"
+	print "---Average percentage of retransmissions: ", averageRetransmissions/float(registered+1), "%\n"
+	
 
 
 
@@ -142,16 +155,17 @@ def outputToFile(dict, hostNumbers, file):
 	output.close()
 
 
-def outputFilePerNode(dict, column):
+def outputFilePerNode(dict, column1, column2):
 	listOfValues = []
 	for key in dict:
 		lines = 0
 		nameOfFile = "Node-" + key
-		listOfValues = dict[key][column]
+		listOfValues1 = dict[key][column1]
+		listOfValues2 = dict[key][column2]
 		with open(nameOfFile, 'w') as output:
-			output.write("#1. frameCount, 2. TimeOfArrival" + '\n')
-			for value in listOfValues:
-				output.write(str(lines) + ' ' + str(value) + '\n')
+			output.write("#1. frameCount, 2. TimeOfArrival, 3. DoA" + '\n')
+			for v1, v2 in zip(listOfValues1,listOfValues2):
+				output.write(str(lines) + ' ' + str(v1) + ' ' + str(v2) + '\n')
 				lines += 1
 		output.close()
 		
